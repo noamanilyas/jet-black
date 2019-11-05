@@ -18069,7 +18069,7 @@ Webflow.define('maps', module.exports = function ($, _) {
   var $maps;
   var namespace = '.w-widget-map'; // The API key is injected here from the Webflow Integrations tab on the site's dashboard
 
-  var googleMapsApiKey = ''; // -----------------------------------
+  var googleMapsApiKey = 'AIzaSyC1L9GlUE2SFRbKouzZCL6QGOZuBs7nJjk'; // -----------------------------------
   // Module methods
 
   api.ready = function () {
@@ -18081,7 +18081,10 @@ Webflow.define('maps', module.exports = function ($, _) {
 
   api.destroy = removeListeners; // -----------------------------------
   // Private methods
-
+  var url = new URL(window.location.href);
+  var origin = url.searchParams.get("o");
+  var dest = url.searchParams.get("d");
+  
   function initMaps() {
     $maps = $doc.find(namespace);
 
@@ -18103,6 +18106,37 @@ Webflow.define('maps', module.exports = function ($, _) {
       $maps.each(renderMap);
       removeListeners();
       addListeners();
+      distance();
+    }
+  }
+
+  function distance(){
+
+    var service = new google.maps.DistanceMatrixService();
+    service.getDistanceMatrix(
+      {
+        origins: [origin],
+        destinations: [dest],
+        travelMode: 'DRIVING'
+        // ,
+        // transitOptions: TransitOptions,
+        // drivingOptions: DrivingOptions,
+        // unitSystem: UnitSystem,
+        // avoidHighways: Boolean,
+        // avoidTolls: Boolean,
+      }, callback);
+
+    function callback(response, status) {
+       var miles = response.rows[0].elements[0].distance.value / 1609.344;
+       var singlePrice = (miles*1.65).toFixed(2);
+       var x = document.getElementsByClassName('singlePrice');
+       var i;
+        for (i = 0; i < x.length; i++) {
+          x[i].innerHTML = singlePrice;
+        }
+
+      // See Parsing the Results for
+      // the basics of a callback function.
     }
   }
 
@@ -18154,6 +18188,13 @@ Webflow.define('maps', module.exports = function ($, _) {
       marker: new google.maps.Marker({
         draggable: false
       }),
+      markerA: new google.maps.Marker({
+        draggable: false
+      }),
+      markerB: new google.maps.Marker({
+        draggable: false
+      }),
+      geocoder: new google.maps.Geocoder(),
       // Tooltip infowindow
       infowindow: new google.maps.InfoWindow({
         disableAutoPan: true
@@ -18184,6 +18225,8 @@ Webflow.define('maps', module.exports = function ($, _) {
       mapTypeId: state.style
     });
     state.marker.setMap(state.map); // Set map position and offset
+    state.markerA.setMap(state.map); // Set map position and offset
+    state.markerB.setMap(state.map); // Set map position and offset
 
     state.setMapPosition = function () {
       state.map.setCenter(state.latLngObj);
@@ -18209,8 +18252,35 @@ Webflow.define('maps', module.exports = function ($, _) {
     }); // Set initial position
 
     state.setMapPosition();
-    state.marker.setPosition(state.latLngObj);
-    state.infowindow.setPosition(state.latLngObj); // Draw tooltip
+    state.geocoder.geocode( { 'address': origin}, function(results, status) {
+      if (status == 'OK') {
+        // map.setCenter(results[0].geometry.location);
+        // var marker = new google.maps.Marker({
+        //     map: map,
+        //     position: results[0].geometry.location
+        // });
+        console.log(results[0].geometry.location)
+        console.log(results[0])
+        state.markerA.setPosition( state.latLngObj);
+      } else {
+        alert('Geocode was not successful for the following reason: ' + status);
+      }
+    });
+    // state.geocoder.geocode( { 'address': dest}, function(results, status) {
+    //   if (status == 'OK') {
+    //     // map.setCenter(results[0].geometry.location);
+    //     // var marker = new google.maps.Marker({
+    //     //     map: map,
+    //     //     position: results[0].geometry.location
+    //     // });
+    //     console.log(results[0].geometry.location)
+    //     state.markerB.setPosition( results[0].geometry.location);
+    //   } else {
+    //     alert('Geocode was not successful for the following reason: ' + status);
+    //   }
+    // });
+    // state.marker.setPosition(state.latLngObj);
+    // state.infowindow.setPosition(state.latLngObj); // Draw tooltip
 
     var tooltip = data.widgetTooltip;
 
