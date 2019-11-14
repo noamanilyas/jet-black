@@ -41,10 +41,11 @@
         <div class="alt-booking-container hidde">
           <h1>Book a Journey</h1><a data-w-id="c880ef93-78b5-aecf-bd73-1356ed291617" href="#" class="button alternate padding-top w-button">Make a Booking</a></div>
         <div class="w-form">
-          <form id="wf-form-Journey-Form" name="wf-form-Journey-Form" data-name="Journey Form" method="get" redirect="https://jet-transfers.webflow.io/new-journey/step-one" data-redirect="https://jet-transfers.webflow.io/new-journey/step-one" ms-signup="true" class="signup-form no-padding">
+          <form id="wf-form-Journey-Form" name="wf-form-Journey-Form" data-name="Journey Form" method="get"
+          action="/new-journey/step-one.html" redirect="https://jet-transfers.webflow.io/new-journey/step-one" data-redirect="https://jet-transfers.webflow.io/new-journey/step-one" ms-signup="true" class="signup-form no-padding">
             <h1 class="form-heading">Book Journey Now</h1>
-            <div class="field-wrap"><label for="From-2" class="field-label">Travel From</label><input type="text" class="form-field w-input" maxlength="256" name="From" data-name="From" placeholder="e.g. Heathrow Airport or SO143FD" ms-field="from" id="From-2" required=""></div>
-            <div class="field-wrap"><label for="To-2" class="field-label">Travel To</label><input type="text" class="form-field w-input" maxlength="256" name="To" data-name="To" placeholder="e.g. SO143FD or Harrods London" ms-field="To" id="To" required=""></div><label class="w-checkbox gdpr-checkbox hide"><input type="checkbox" id="checkbox" name="checkbox" data-name="Checkbox" required="" ms-field="gdpr" class="w-checkbox-input checkbox"><span for="checkbox" class="terms-text w-form-label"> I agree to the <a href="#" class="login-page-link">Terms</a> and <a href="#" class="login-page-link">Privacy Policy</a></span></label><input type="submit" value="Continue" data-wait="Please wait..." class="button alternate padding-top w-button"></form>
+            <div class="field-wrap"><label for="From-2" class="field-label">Travel From</label><input type="text" class="form-field w-input controls" id="pac-input1" maxlength="256" name="From" data-name="From" placeholder="e.g. Heathrow Airport or SO143FD" ms-field="from" id="From-2" required=""></div>
+            <div class="field-wrap"><label for="To-2" class="field-label">Travel To</label><input type="text" class="form-field w-input controls" id="pac-input2" maxlength="256" name="To" data-name="To" placeholder="e.g. SO143FD or Harrods London" ms-field="To" id="To" required=""></div><label class="w-checkbox gdpr-checkbox hide"><input type="checkbox" id="checkbox" name="checkbox" data-name="Checkbox" ms-field="gdpr" class="w-checkbox-input checkbox"><span for="checkbox" class="terms-text w-form-label"> I agree to the <a href="#" class="login-page-link">Terms</a> and <a href="#" class="login-page-link">Privacy Policy</a></span></label><input type="submit" value="Continue" data-wait="Please wait..." class="button alternate padding-top w-button"></form>
           <div class="w-form-done">
             <div>Thank you! Your submission has been received!</div>
           </div>
@@ -400,6 +401,15 @@
   </div>
   <script src="https://d3e54v103j8qbb.cloudfront.net/js/jquery-3.4.1.min.220afd743d.js" type="text/javascript" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
   <script src="js/webflow.js" type="text/javascript"></script>
+  <script>
+    function initAutocomplete() {
+      new google.maps.places.SearchBox(document.getElementById('pac-input1'));
+      new google.maps.places.SearchBox(document.getElementById('pac-input2'));
+    }
+  </script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBv_VPMV6mf0UYryUWqN9GfL_ijSU0DunQ&libraries=places&callback=initAutocomplete"
+        async defer></script>
+
   <!-- [if lte IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/placeholders/3.0.2/placeholders.min.js"></script><![endif] -->
 </body>
 </html>
