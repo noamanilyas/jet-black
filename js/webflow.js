@@ -18069,7 +18069,7 @@ Webflow.define('maps', module.exports = function ($, _) {
   var $maps;
   var namespace = '.w-widget-map'; // The API key is injected here from the Webflow Integrations tab on the site's dashboard
 
-  var googleMapsApiKey = 'AIzaSyC1L9GlUE2SFRbKouzZCL6QGOZuBs7nJjk'; // -----------------------------------
+  var googleMapsApiKey = 'AIzaSyBv_VPMV6mf0UYryUWqN9GfL_ijSU0DunQ'; // -----------------------------------
   // Module methods
 
   api.ready = function () {
@@ -18082,8 +18082,8 @@ Webflow.define('maps', module.exports = function ($, _) {
   api.destroy = removeListeners; // -----------------------------------
   // Private methods
   var url = new URL(window.location.href);
-  var origin = url.searchParams.get("o");
-  var dest = url.searchParams.get("d");
+  var origin = url.searchParams.get("From");
+  var dest = url.searchParams.get("To");
   
   function initMaps() {
     $maps = $doc.find(namespace);
@@ -18127,13 +18127,19 @@ Webflow.define('maps', module.exports = function ($, _) {
       }, callback);
 
     function callback(response, status) {
-       var miles = response.rows[0].elements[0].distance.value / 1609.344;
-       var singlePrice = (miles*1.65).toFixed(2);
-       var x = document.getElementsByClassName('singlePrice');
-       var i;
+      console.log(response)
+      if(response.rows[0].elements[0].status !== "ZERO_RESULTS") {
+        var miles = response.rows[0].elements[0].distance.value / 1609.344;
+        var singlePrice = (miles*1.65).toFixed(2);
+        var x = document.getElementsByClassName('singlePrice');
+        var i;
         for (i = 0; i < x.length; i++) {
           x[i].innerHTML = singlePrice;
         }
+      } else {
+        alert('Unable to calculate price: ' + response.rows[0].elements[0].status);
+      }
+       
 
       // See Parsing the Results for
       // the basics of a callback function.
@@ -18164,7 +18170,7 @@ Webflow.define('maps', module.exports = function ($, _) {
   function resizeMap(i, el) {
     var state = getState(el);
     google.maps.event.trigger(state.map, 'resize');
-    state.setMapPosition();
+    // state.setMapPosition();
   } // Store state on element data
 
 
@@ -18183,7 +18189,7 @@ Webflow.define('maps', module.exports = function ($, _) {
       latLng: '51.511214,-0.119824',
       tooltip: '',
       style: 'roadmap',
-      zoom: 12,
+      zoom: 10,
       // Marker
       marker: new google.maps.Marker({
         draggable: false
@@ -18224,7 +18230,7 @@ Webflow.define('maps', module.exports = function ($, _) {
       },
       mapTypeId: state.style
     });
-    state.marker.setMap(state.map); // Set map position and offset
+    // state.marker.setMap(state.map); // Set map position and offset
     state.markerA.setMap(state.map); // Set map position and offset
     state.markerB.setMap(state.map); // Set map position and offset
 
@@ -18246,12 +18252,12 @@ Webflow.define('maps', module.exports = function ($, _) {
     }; // Fix position after first tiles have loaded
 
 
-    google.maps.event.addListener(state.map, 'tilesloaded', function () {
-      google.maps.event.clearListeners(state.map, 'tilesloaded');
-      state.setMapPosition();
-    }); // Set initial position
+    // google.maps.event.addListener(state.map, 'tilesloaded', function () {
+    //   google.maps.event.clearListeners(state.map, 'tilesloaded');
+    //   state.setMapPosition();
+    // }); // Set initial position
 
-    state.setMapPosition();
+    
     state.geocoder.geocode( { 'address': origin}, function(results, status) {
       if (status == 'OK') {
         // map.setCenter(results[0].geometry.location);
@@ -18259,26 +18265,26 @@ Webflow.define('maps', module.exports = function ($, _) {
         //     map: map,
         //     position: results[0].geometry.location
         // });
-        console.log(results[0].geometry.location)
-        console.log(results[0])
-        state.markerA.setPosition( state.latLngObj);
+        
+        state.markerA.setPosition(results[0].geometry.location);
+        state.map.setCenter(results[0].geometry.location)
       } else {
         alert('Geocode was not successful for the following reason: ' + status);
       }
     });
-    // state.geocoder.geocode( { 'address': dest}, function(results, status) {
-    //   if (status == 'OK') {
-    //     // map.setCenter(results[0].geometry.location);
-    //     // var marker = new google.maps.Marker({
-    //     //     map: map,
-    //     //     position: results[0].geometry.location
-    //     // });
-    //     console.log(results[0].geometry.location)
-    //     state.markerB.setPosition( results[0].geometry.location);
-    //   } else {
-    //     alert('Geocode was not successful for the following reason: ' + status);
-    //   }
-    // });
+    state.geocoder.geocode( { 'address': dest}, function(results, status) {
+      if (status == 'OK') {
+        // map.setCenter(results[0].geometry.location);
+        // var marker = new google.maps.Marker({
+        //     map: map,
+        //     position: results[0].geometry.location
+        // });
+        console.log(results[0].geometry.location)
+        state.markerB.setPosition( results[0].geometry.location);
+      } else {
+        alert('Geocode was not successful for the following reason: ' + status);
+      }
+    });
     // state.marker.setPosition(state.latLngObj);
     // state.infowindow.setPosition(state.latLngObj); // Draw tooltip
 
